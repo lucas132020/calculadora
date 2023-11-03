@@ -1,5 +1,5 @@
 class Memory {
-  static const List<String> operations = [];
+  static const operations = ['%', '÷', '+', '-', 'x', '='];
 
   String? _operation;
 
@@ -17,27 +17,73 @@ class Memory {
 
   /// Deve ser possível iniciar todas os parametos da memoria;
   void _clear() {
-    //TODO: reinicializar as propriedades da classe Memória
+    result = '0';
+    _buffer.setAll(0, [0.0, 0.0]);
+    _bufferIndex = 0;
+    _operation = null;
+    _usedOperation = false;
   }
 
   /// Aplica o comando específico para a nossa calculadora
   void applyCommand(String command) {
-    //TODO: Aplicar os comandos e chamas as funções necessárias para a execução
+    if (command == 'AC') {
+      _clear();
+    } else if (command == 'DEL') {
+      deleteEndDigit();
+    } else if (operations.contains(command)) {
+      _setOperation(command);
+    } else {
+      _addDigit(command);
+    }
   }
 
   void deleteEndDigit() {
-    //TODO: Deletar o ultimo dígito exibido ou exibir '0' quando não tiver mais dígitos a serem apagados
+    result = result.length > 1 ? result.substring(0, result.length - 1) : '0';
   }
 
   void _addDigit(String digit) {
-    //TODO: Adicionar um digito e exibir no display
+    if (_usedOperation) result = '0';
+
+    if (result.contains('.') && digit == '.') digit = '';
+    if (result == '0' && digit != '.') result = '';
+
+    result += digit;
+
+    _buffer[_bufferIndex] = double.tryParse(result) ?? 0.0;
+    _usedOperation = false;
   }
 
   void _setOperation(String operation) {
-    //TODO: Definir qual operador esta sendo selecionado e marcar _usedOperation = true, verificar se o operação é '=' e chamar o calculate
+    if (_usedOperation && operation == _operation) return;
+
+    if (_bufferIndex == 0) {
+      _bufferIndex = 1;
+    } else {
+      _buffer[0] = _calculate();
+    }
+
+    if (operation != '=') _operation = operation;
+
+    result = _buffer[0].toString();
+    result = result.endsWith('.0') ? result.split('.')[0] : result;
+
+    _usedOperation = true;
   }
 
-  // double _calculate() {
-  //   //TODO: Realizar as operações básicas de matemática e exibir o resultado no display
-  // }
+  double _calculate() {
+    switch (_operation) {
+      case '%':
+        return (_buffer[0] * _buffer[1]) / 100;
+      case '÷':
+        return _buffer[0] / _buffer[1];
+      case 'x':
+        return _buffer[0] * _buffer[1];
+      case '+':
+        return _buffer[0] + _buffer[1];
+      case '-':
+        return _buffer[0] - _buffer[1];
+      default:
+        return 0.0;
+    }
+  }
 }
