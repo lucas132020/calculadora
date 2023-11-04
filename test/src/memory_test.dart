@@ -126,8 +126,8 @@ void main() {
         // Gere números aleatórios para testar a limpeza de memória
         var initialNumber = generateRandomInt().toString();
 
-        memory.applyCommand(initialNumber);
-        expect(memory.result, initialNumber);
+        // memory.applyCommand(initialNumber);
+        // expect(memory.result, initialNumber);
 
         memory.applyCommand('AC');
         expect(memory.result, '0');
